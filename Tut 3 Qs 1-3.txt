@@ -1,0 +1,178 @@
+Tutorial 3
+
+Question 1:
+
+import numpy as np
+class Complex(object):
+
+    def __init__(self,r,im):
+        r=0
+        im=0
+        self.r=r
+        self.im=im
+    def copy(self):
+        return complex(self.r,self.im) 
+
+    def __str__(Complex, r, im):   
+        r=0
+        im=0
+        self.r=r
+        self.im=im
+        return str(self.r,self.im)
+    
+    def __sub__(self,num):
+        ans=self.copy()
+        if isinstance(num,Complex):
+            ans.r=ans.r+num.r
+            ans.im=ans.im-num.im
+        else:
+            ans.r=ans.r-num
+        return ans
+    
+    def __mul__(self,num):
+        ans=self.copy()
+        if isinstance(num,Complex):
+            ans.r=self.r*num.r-self.im*num.im
+            ans.im=self.r*num.im+self.im*num.r
+        else:
+            ans.r=ans.r*num
+            ans.im=ans.im*num
+        return ans
+    
+    def __floordiv__(self,num):
+        ans=self.copy()    
+        if isinstance(num,Complex):
+            num.im=-1*num.im
+            ans=self*num
+            abso=num.r**2+num.im**2
+            ans=ans*(1.0/abso)
+        else:
+            ans=self*(1.0/num)
+        
+    def __repr__(self):
+        if (self.i<0):
+            return repr(self.r)+' - '+repr(-1*self.im) +'im'
+        else:
+            return repr(self.r)+' + 'repr(self.im) +'im'
+
+
+
+
+
+
+
+Question 2
+
+
+class Particles:
+    def __init__(self,num,G): 
+        G=6.67*10**-11
+        x=0
+        y=0
+        num=100                                #number of particles
+        self.x=np.random.randn(num)
+        self.y=np.random.randn(num)
+        self.m=np.ones(num)                      #same masses
+        self.option={'num':num,'G':G}
+        
+        
+    def Potential_energy(self):
+        PE=np.zeros(self.option['num'])    #initial potential to 0
+        for i in range(0,self.option['num']):
+            dx=self.x[i]-self.x
+            dy=self.y[i]-self.y
+            r=np.sqrt(dx*dx+dy*dy)
+            PE[i]=self.m[i]+np.sum(self.option['G']*self.m[i]*self.m*r)
+        return PE
+
+    
+ 
+
+
+
+Question 3
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+class Particles:
+    def __init__(self,num,G,soften,m,dt):
+        G=6.67*10**-11
+        num=100
+        soften=0.1
+        m=1.0
+        self.options={'num':num,'G':G,'soften':soften,'dt':dt}
+        self.x=np.random.randn(self.options['num'])
+        self.y=np.random.randn(self.options['num'])     
+        self.Vx=np.zeros(self.options['num'])
+        self.Vy=np.random.zeros(self.options['num'])
+        self.m=np.ones(self.options['num'])*(m/self.options['num'])
+        
+    def Force(self):
+        
+        self.Fx=np.zeros(self.options['num'])
+        self.Fy=np.zeros(self.options['num'])
+        PE=np.zeros(self.options['num'])
+        for i in range(0,self.options['num']):
+            dx=self.x[i]-self.x
+            dy=self.y[i]-self.y
+            rsqrd=dx**2+dy**2
+            soften=self.options['soften']**2
+            rsqrd[rsqrd<soften]=soften
+            rsqrd=rsqrd+soften               
+            r1=np.sqrt(rsqrd)
+            r2=1/(r1*rsqrd)
+            self.Fx[i]=-np.sum(self.m*dx*r2)*self.options['G']
+            self.Fy[i]=-np.sum(self.m*dy*r2)*self.options['G']
+            PE+=self.options['G']*np.sum(self.m/r2)
+            return -0.5*PE
+    
+    def Update(self):
+        self.x+=self.vx*self.options['dt']
+        self.y+=self.vy*self.options['dt']
+        PE=self.Forces()
+        self.vx+=self.fx*self.options['dt']
+        self.vy+=self.fy*self.options['dt']
+        KE=0.5*np.sum(self.m*(self.Vx**2+self.Vy**2))
+        return KE+PE
+
+
+   if __name__=='__main__':
+    parts=100
+    oversamp=5
+    part=Solver(m=1.0/parts,num=parts,dt=0.01/oversamp)
+    plt.plot(part.x,part.y,'.')
+    plt.show()
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
